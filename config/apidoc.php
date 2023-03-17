@@ -166,12 +166,7 @@ return [
         'letter_rule' => "lcfirst",
         // url前缀
         'prefix'=>"",
-        // 过滤的目录
-//        'filter_keys'=>['app','controller','demo'],
-        // 自定义url生成方法
-//        'custom' =>function($path,$method){
-//            return "/".str_replace('\\','/',$$path).$method;
-//        },
+
     ],
     // （必须）缓存配置
     'cache'              => [
@@ -181,7 +176,7 @@ return [
     // （必须）权限认证配置
     'auth'               => [
         // 是否启用密码验证
-        'enable'     => true,
+        'enable'     => false,
         // 全局访问密码
         'password'   => "123456",
         // 密码加密盐
@@ -189,6 +184,8 @@ return [
         // 授权访问后的有效期
         'expire' => 24*60*60
     ],
+    // （选配）是否自动注册路由
+    'auto_register_routes'=>true,
     // 全局参数
     'params'=>[
         'header'=>[
@@ -440,6 +437,66 @@ return [
                 ]
             ]
         ]
+    ],
+    // （选配）代码模板
+    'code_template'=>[
+        [
+            // 标题
+            'title'=>'vue前端Api文件',
+            // 选择模式，controller、api
+            'select_mode'=>'controller',
+            // 是否多选
+            'multiple'=>false,
+            // 限制接口/控制器勾选的数量
+            'limit'=>5,
+            // 模板文件地址
+            'template'=>'template\codes\fe_api_file.tpl',
+            // 代码语言
+            'language'=>'javascript',
+            // 配置表单
+            'form' => [
+                // 表单元素布局方式 ，inline=联排；grid=网格
+                'layout' => 'inline',
+                // 表单项
+                'items' => [
+                    [
+                        // （必须）表单项标题
+                        'title' => '请求封装import',
+                        // （必须）表单项字段
+                        'field' => 'http_import',
+                        // （必须）输入类型，支持：input、select、checkbox
+                        'type' => 'input'
+                    ],
+                    [
+                        'title' => '显示注释',
+                        'field' => 'show_desc',
+                        'type' => 'checkbox'
+                    ],
+                ],
+                // 表单默认值
+                'data'=>[
+                    'http_import'=>'import sendRequest from "@/utils/request";',
+                    'show_desc'=>true
+                ]
+            ],
+        ],
+        [
+            'title'=>'jq Ajax请求',
+            'select_mode'=>'api',
+            'multiple'=>false,
+            'language'=>'js',
+            'template'=>'template\codes\jq_ajax.tpl',
+        ],
+        [
+            'title'=>'vue Crud模板',
+            'select_mode'=>'api',
+            'multiple'=>true,
+            'limit'=>5,
+            'language'=>'vue',
+            'tips'=>'请依次选择 分页查询、明细查询、新增、编辑、删除接口',
+            'template'=>'template\codes\vue_crud.tpl',
+        ]
     ]
+
 
 ];

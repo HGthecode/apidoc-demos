@@ -91,17 +91,27 @@ class MdDesc extends BaseController
     /**
      * lang(api.mdDesc.refMdApiFieldDesc.title)
      * @Apidoc\Method("GET")
-     * @Apidoc\Param("mdField", type="string",require=true, mdRef="/docs/apiDesc.md#name字段" )
+     * @Apidoc\Param("mdField", type="string",require=true, md="/docs/apiDesc.md#name字段" )
      * @Apidoc\Param(ref="app\model\User@getDetail")
-     * @Apidoc\Returned ("name1", type="string",require=true, mdRef="/docs/apiDesc.md#name字段" )
+     * @Apidoc\Returned ("name1", type="string",require=true, md="/docs/apiDesc.md#name字段" )
      */
     public function refMdApiFieldDesc(Request $request){
         $params = $request->param();
         return show(0,"",$params);
     }
 
-
-
+    /**
+     * lang(api.mdDesc.mdResponseSuccess.title)
+     * @Apidoc\Method("GET")
+     * @Apidoc\Query("name", type="string",require=true, desc="lang(api.base.index.name)",mock="@name")
+     * @Apidoc\Query("phone", type="string",require=true, desc="lang(api.base.index.phone)",mock="@phone")
+     * @Apidoc\ResponseSuccessMd(ref="/docs/mdResponse.md")
+     * @Apidoc\ResponseErrorMd(" ## 错误Markdown")
+     */
+    public function mdResponseSuccess(Request $request){
+        $params = $request->param();
+        return show(0,"",$params);
+    }
 
 
 }

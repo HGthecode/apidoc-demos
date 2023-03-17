@@ -20,8 +20,8 @@ class UserRest
      * @Apidoc\Author("小飞机")
      * @Apidoc\Url("/demo/userRest/list")
      * @Apidoc\Method("GET")
-     * @Apidoc\Param("keyword", type="string", desc="关键词" )
-     * @Apidoc\Param( ref="pagingParam")
+     * @Apidoc\Query("keyword", type="string", desc="关键词" )
+     * @Apidoc\Query( ref="pagingParam")
      * @Apidoc\Returned (ref="pagingParam")
      * @Apidoc\Returned("data", type="array",ref="app\model\User",withoutField="delete_time,password",desc="列表数据"),
      */
@@ -42,7 +42,7 @@ class UserRest
      * @Apidoc\Url("/demo/userRest/<id>")
      * @Apidoc\Method("GET")
      * @Apidoc\ParamType("route")
-     * @Apidoc\Param( ref="getDetail")
+     * @Apidoc\RouteParam ("id",type="int",desc="Id")
      * @Apidoc\Returned(ref="app\model\User",withoutField="delete_time,password")
      */
     public function detail(Request $request){

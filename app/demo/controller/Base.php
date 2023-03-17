@@ -17,7 +17,6 @@ class Base extends BaseController
 
     /**
      * @Apidoc\Title("lang(api.base.index.title)")
-     * @Apidoc\Desc("lang(api.base.index.desc)")
      * @Apidoc\Author("HG")
      * @Apidoc\Tag("lang(api.base.index.tag)")
      * @Apidoc\Url ("/demo/base/index")
@@ -107,12 +106,21 @@ class Base extends BaseController
     /**
      * NotParse
      * @Apidoc\Param("name",type="string",desc="姓名")
-     * @Apidoc\Param("age",type="string",desc="年龄")
      */
     public function notParseApi(){
         return show(0,"通过 notApi 标记该方法不解析");
     }
 
+    /**
+     * lang(api.base.customResponses.title)
+     * @Apidoc\Method("GET")
+     * @Apidoc\Query("name",type="string",desc="姓名",mock="@cname")
+     * @Apidoc\Query("age",type="string",desc="年龄",mock="@integer(10, 100)")
+     */
+    public function customResponses(){
+        $res = $this->request->get();
+        dump($res);
+    }
 
 
 }

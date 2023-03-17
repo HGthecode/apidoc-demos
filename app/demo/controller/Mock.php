@@ -32,10 +32,10 @@ class Mock extends BaseController
      * @Apidoc\Param("idcard",type="string",mock="@idcard")
      * @Apidoc\Param("regexp",type="string",mock="@regexp('/\[a-z]{5,10}\-/',3)")
      * @Apidoc\Param("abc",type="string",mock="@abc('666')")
-     * @Apidoc\Param("array",type="array",desc="lang(api.field.array)",
+     * @Apidoc\Param("array",type="array",desc="lang(api.field.array)",children={
      *     @Apidoc\Param("name",type="string",desc="lang(api.field.name)",mock="@cname"),
      *     @Apidoc\Param("age",type="int",desc="lang(api.field.name)",mock="@integer(0, 100)"),
-     * )
+     * })
      */
     public function index(Request $request){
         $params = $request->param();

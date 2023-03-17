@@ -65,6 +65,7 @@ return [
 
         'base.contentType.title'=>'指定请求ContentType',
         'base.multipleMethod.title'=>'多个请求类型',
+        'base.customResponses.title'=>'自定义响应的显示',
 
         'params.controller.title'=>'接口参数注解用法',
         'params.index.title'=>'基础的参数注释',
@@ -105,5 +106,6 @@ return [
         'mdDesc.mdDoc.desc'=>'使用md文档完全自定义接口内容',
         'mdDesc.mdApiFieldDesc.title'=>'字段描述使用md语法',
         'mdDesc.refMdApiFieldDesc.title'=>'字段描述引用md文档',
+        'mdDesc.mdResponseSuccess.title'=>'使用md定义成功响应体',
     ]
 ];

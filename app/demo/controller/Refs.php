@@ -4,7 +4,7 @@ namespace app\demo\controller;
 
 use app\BaseController;
 use hg\apidoc\annotation as Apidoc;
-
+use app\model\User;
 
 /**
  * lang(api.refs.controller.title)
@@ -21,6 +21,7 @@ class Refs extends BaseController
      * @Apidoc\Method("GET")
      * @Apidoc\Header( ref="auth")
      * @Apidoc\Query ( ref="pagingParam")
+     * @Apidoc\Query ("users",type="int",desc="aa",ref={User::class})
      * @Apidoc\Returned("list", type="array",ref="dictionary", desc="lang(api.field.list)")
      */
     public function definitions(){

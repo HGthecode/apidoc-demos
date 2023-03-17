@@ -22,8 +22,6 @@ class DebugEvent extends BaseController
      * @Apidoc\Param("scrfToken",type="string",desc="lang(api.debugEvent.index.scrfToken)",mock="@string")
      * @Apidoc\Before(event="setHeader",key="X-CSRF-TOKEN",value="body.phone")
      * @Apidoc\Before(event="clearBody",key="name")
-     * @Apidoc\After(event="check",key="res.status",value="200",desc="断言请求状态码为200")
-     * @Apidoc\After(event="check",key="res.data.code",value="0",desc="断言响应code为0")
      */
     public function index(Request $request){
         $params = $request->param();
@@ -37,15 +35,18 @@ class DebugEvent extends BaseController
      * @Apidoc\Method("POST")
      * @Apidoc\Param("username",type="string",desc="lang(api.field.username)",mock="@name")
      * @Apidoc\Param("password",type="string",desc="lang(api.field.password)",mock="@phone")
+     * @Apidoc\Param("age",type="string",desc="age")
      * @Apidoc\Before(event="setBody",key="password",handleValue="md5",value="body.password")
      * @Apidoc\After(event="setGlobalHeader",key="Authorization",value="res.data.token",desc="lang(api.field.token)")
+     * @Apidoc\After(event="setGlobalHeader",key="refresh_token",value="res.data.token",desc="lang(api.field.token)")
      */
     public function login(Request $request){
         $params = $request->param();
         $res = [
             'uid'=>1,
             'username'=>  $params['username'],
-            'token' =>  "Bearer xxxxxxxx".uniqid()
+            'token' =>  "Bearer xxxxxxxx".uniqid(),
+            'refresh_token' =>  "Bearer ".uniqid(),
         ];
         return show(0,"",$res);
     }
@@ -58,10 +59,9 @@ class DebugEvent extends BaseController
      * @Apidoc\Param("name",type="string",desc="lang(api.field.name)",mock="@cname")
      * @Apidoc\Param("phone",type="string",desc="lang(api.field.phone)",mock="@phone")
      * @Apidoc\Param("age",type="int",desc="lang(api.field.age)",mock="@integer(1, 100)")
-     * @Apidoc\Before(event="ajax",url="/demo/test/getFormToken",method="POST",contentType="appicateion-json",
-     *    @Apidoc\Before(event="setBody",value="body."),
+     * @Apidoc\Before(event="ajax",value="body.",url="/demo/test/getFormToken",method="POST",contentType="appicateion-json",after={
      *    @Apidoc\After(event="setHeader",key="X-CSRF-TOKEN",value="res.data.data")
-     * )
+     * })
      * @Apidoc\Before(event="setBody",key="password",handleValue="md5",value="body.password")
      */
     public function formToken(Request $request){

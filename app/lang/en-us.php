@@ -66,6 +66,7 @@ return [
 
         'base.contentType.title'=>'Set ContentType',
         'base.multipleMethod.title'=>'Multiple Method',
+        'base.customResponses.title'=>'custom responses',
 
         'params.controller.title'=>'Api Params Annotation',
         'params.index.title'=>'Base Params',
@@ -106,5 +107,6 @@ return [
         'mdDesc.mdDoc.desc'=>'Use Md Customize Document Content',
         'mdDesc.mdApiFieldDesc.title'=>'Field Use Md',
         'mdDesc.refMdApiFieldDesc.title'=>'Field Use MdRef',
+        'mdDesc.mdResponseSuccess.title'=>'ResponseSuccess Use Md',
     ]
 ];
