@@ -2,57 +2,60 @@
 
 namespace app\demo\controller;
 
-use app\BaseController;
+use support\Request;
 use hg\apidoc\annotation as Apidoc;
+use app\common\controller\Definitions;
+use app\model\User as UserModel;
+use app\demo\services\User as UserService;
 
-
-/**
- * lang(api.refs.controller.title)
- * @Apidoc\Group("base")
- * @Apidoc\Sort(3)
- */
-class Refs extends BaseController
+#[Apidoc\Title("Ref注解引用")]
+#[Apidoc\Group("base")]
+#[Apidoc\Sort(3)]
+class Refs
 {
 
-    /**
-     * @Apidoc\Title("lang(api.refs.definitions.title)")
-     * @Apidoc\Desc("lang(api.refs.definitions.desc)")
-     * @Apidoc\Author("HG")
-     * @Apidoc\Method("GET")
-     * @Apidoc\Header( ref="auth")
-     * @Apidoc\Query ( ref="pagingParam")
-     * @Apidoc\Returned("list", type="array",ref="dictionary", desc="lang(api.field.list)")
-     */
-    public function definitions(){
-        $res = $this->request->param();
-        return show(0,"",$res);
+
+    #[
+        Apidoc\Title("引用公共注解"),
+        Apidoc\Method("POST"),
+        Apidoc\Header(ref:"authToken"),
+        Apidoc\Param(ref:[Definitions::class,"pagingParam"] ),
+        Apidoc\Returned(ref: [Definitions::class,"pagingParam"]),
+        Apidoc\Returned(name: "data",type: "array",desc: "业务数据",children: [
+            ['name'=>'name','type'=>'string','desc'=>'姓名'],
+            ['name'=>'age','type'=>'int','desc'=>'年龄'],
+        ]),
+    ]
+    public function definitions(Request $request){
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
 
 
 
-    /**
-     * @Apidoc\Title("lang(api.refs.model.title)")
-     * @Apidoc\Desc("lang(api.refs.model.desc)")
-     * @Apidoc\Author("HG")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\model\User@getDetail")
-     * @Apidoc\Returned(ref="app\model\User")
-     */
-    public function model(){
-        $res = $this->request->param();
-        return show(0,"",$res);
+    #[
+        Apidoc\Title("引用模型注解"),
+        Apidoc\Method("POST"),
+        Apidoc\Param(name: "userInfo1",ref:[UserModel::class,"getInfo"],desc: "引用模型中指定的方法"),
+        Apidoc\Param(name: "userInfo2",ref:UserModel::class,desc: "引用模型数据表字段"),
+        Apidoc\Param(name: "userInfo3",ref:"app\model\User",desc: "引用模型数据表字段"),
+        Apidoc\Returned(ref:UserModel::class),
+    ]
+    public function model(Request $request){
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
 
-    /**
-     * @Apidoc\Title("lang(api.refs.service.title)")
-     * @Apidoc\Desc("lang(api.refs.service.desc)")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\demo\services\User\getPageList")
-     * @Apidoc\Returned(ref="app\demo\services\User\getPageList")
-     */
-    public function service(){
-        $res = $this->request->param();
-        return show(0,"",$res);
+
+    #[
+        Apidoc\Title("引用其它类注解"),
+        Apidoc\Method("POST"),
+        Apidoc\Param(name: "userInfo",type: "object",ref:[UserService::class,"getList"]),
+        Apidoc\Returned(ref:[UserService::class,"getList"]),
+    ]
+    public function service(Request $request){
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
 
 

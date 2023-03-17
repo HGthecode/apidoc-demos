@@ -2,96 +2,93 @@
 
 namespace app\demo\controller;
 
-use app\BaseController;
-use app\Request;
+use app\middleware\ApiCrossDomain;
+use app\middleware\TestMiddleware;
+use support\Request;
 use hg\apidoc\annotation as Apidoc;
 
-/**
- * lang(api.debugEvent.controller.title)
- * @Apidoc\Group("base")
- * @Apidoc\Sort(5)
- */
-class DebugEvent extends BaseController
+
+#[Apidoc\Title("调试时事件")]
+#[Apidoc\Group("base")]
+#[Apidoc\Sort(5)]
+class DebugEvent
 {
 
-    /**
-     * @Apidoc\Title ("lang(api.debugEvent.index.title)")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param("name",type="string",desc="lang(api.field.name)",mock="@cname")
-     * @Apidoc\Param("phone",type="string",desc="lang(api.field.phone)",mock="@phone")
-     * @Apidoc\Param("scrfToken",type="string",desc="lang(api.debugEvent.index.scrfToken)",mock="@string")
-     * @Apidoc\Before(event="setHeader",key="X-CSRF-TOKEN",value="body.phone")
-     * @Apidoc\Before(event="clearBody",key="name")
-     * @Apidoc\After(event="check",key="res.status",value="200",desc="断言请求状态码为200")
-     * @Apidoc\After(event="check",key="res.data.code",value="0",desc="断言响应code为0")
-     */
+    #[Apidoc\Title("基础事件")]
+    #[Apidoc\Method("POST")]
+    #[Apidoc\Param("name",type: "string",require: true,desc: "姓名",mock: "@name")]
+    #[Apidoc\Param("scrfToken",type: "string",require: true,desc: "请求时将该值设置为请求头参数",mock: "@string")]
+    #[Apidoc\Before(event: "setHeader",key: "X-CSRF-TOKEN",value: "body.scrfToken")]
+    #[Apidoc\Before(event: "clearBody",key: "name")]
     public function index(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
+        $params = $request->all();
+        return json(['code' => 0, 'data' => $params]);
     }
 
 
-    /**
-     * @Apidoc\Title ("lang(api.debugEvent.login.title)")
-     * @Apidoc\Desc("lang(api.debugEvent.login.desc)")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param("username",type="string",desc="lang(api.field.username)",mock="@name")
-     * @Apidoc\Param("password",type="string",desc="lang(api.field.password)",mock="@phone")
-     * @Apidoc\Before(event="setBody",key="password",handleValue="md5",value="body.password")
-     * @Apidoc\After(event="setGlobalHeader",key="Authorization",value="res.data.token",desc="lang(api.field.token)")
-     */
+    #[Apidoc\Title("登录事件")]
+    #[Apidoc\Desc("调试时自动将password字段md5加密，请求响应后自动将token设置在全局参数中")]
+    #[Apidoc\Method("POST")]
+    #[Apidoc\Param("username",type: "string",require: true,desc: "用户名",mock: "@name")]
+    #[Apidoc\Param("password",type: "string",require: true,desc: "登录密码",mock: "@string")]
+    #[Apidoc\Before(event: "md5",key: "password",value: "body.password",desc: "咪咪咪咪")]
+    #[Apidoc\After(event: "setGlobalHeader",key: "Authorization",value: "res.data.data.token",desc: "Token")]
     public function login(Request $request){
-        $params = $request->param();
+        $params=$request->all();
         $res = [
             'uid'=>1,
             'username'=>  $params['username'],
-            'token' =>  "Bearer xxxxxxxx".uniqid()
+            'token' =>  "Bearer ".uniqid(),
+            'refresh_token'=>uniqid()
         ];
-        return show(0,"",$res);
+        return json(['code' => 0, 'data' => $res]);
     }
 
 
-    /**
-     * @Apidoc\Title ("lang(api.debugEvent.formToken.title)")
-     * @Apidoc\Desc("lang(api.debugEvent.formToken.desc)")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param("name",type="string",desc="lang(api.field.name)",mock="@cname")
-     * @Apidoc\Param("phone",type="string",desc="lang(api.field.phone)",mock="@phone")
-     * @Apidoc\Param("age",type="int",desc="lang(api.field.age)",mock="@integer(1, 100)")
-     * @Apidoc\Before(event="ajax",url="/demo/test/getFormToken",method="POST",contentType="appicateion-json",
-     *    @Apidoc\Before(event="setBody",value="body."),
-     *    @Apidoc\After(event="setHeader",key="X-CSRF-TOKEN",value="res.data.data")
-     * )
-     * @Apidoc\Before(event="setBody",key="password",handleValue="md5",value="body.password")
-     */
+    #[Apidoc\Title("表单验证")]
+    #[Apidoc\Desc("在接口请求前通过事件发起一个请求，将该请求响应参数作为该接口的请求头/参数")]
+    #[Apidoc\Method("POST")]
+    #[Apidoc\Param("name",type: "string",require: true,desc: "姓名",mock: "@name")]
+    #[Apidoc\Param("phone",type: "string",require: true,desc: "电话",mock: "@phone")]
+    #[Apidoc\Before(event: "ajax",value: "body.",url: "/demo/debugEvent/getFormToken",method: "GET",after: [
+        ['event'=>'setHeader',"key"=>"X-CSRF-TOKEN","value"=>"res.data.data.token"]
+    ])]
     public function formToken(Request $request){
-        $params = $request->param();
+        $params = $request->all();
         $header = $request->header();
-        $token = $request->header("x-csrf-token");
         $res = [
             "params"=>$params,
             "header"=>$header,
-            'token'=>urldecode($token)
         ];
-        return show(0,"",$res);
+        return json(['code' => 0, 'data' => $res]);
+    }
+
+    #[Apidoc\Title("获取表单Token")]
+    #[Apidoc\Method("GET")]
+    public function getFormToken(Request $request){
+        $res = [
+            'uid'=>1,
+            'token' =>  "Bearer ".uniqid(),
+            'refresh_token'=>uniqid()
+        ];
+        return json(['code' => 0, 'data' => $res]);
     }
 
 
-
-    /**
-     * @Apidoc\Title ("lang(api.debugEvent.eventRef.title)")
-     * @Apidoc\Method("POST,GET")
-     * @Apidoc\Param("name",type="string",desc="lang(api.field.name)")
-     * @Apidoc\Param("phone",type="string",desc="lang(api.field.phone)")
-     * @Apidoc\Before(event="setParam",key="abc",value="6666")
-     * @Apidoc\Before(ref="formTokenEvent")
-     * @Apidoc\After (ref="formTokenEvent")
-     */
+    #[Apidoc\Title("事件引用")]
+    #[Apidoc\Method("POST")]
+    #[Apidoc\Before(ref:"formTokenEvent")]
+    #[Apidoc\After(ref:"formTokenEvent")]
     public function eventRef(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
+        $params = $request->all();
+        return json(['code' => 0, 'data' => $params]);
     }
 
-
-
+    #[Apidoc\Title("自定义事件")]
+    #[Apidoc\Method("POST")]
+    #[Apidoc\Before(event:"renderGetUrl")]
+    public function testMyEvent(Request $request){
+        $params = $request->all();
+        return json(['code' => 0, 'data' => $params]);
+    }
 }

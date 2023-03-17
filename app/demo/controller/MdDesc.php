@@ -2,105 +2,97 @@
 
 namespace app\demo\controller;
 
-use app\BaseController;
-use app\Request;
+use support\Request;
 use hg\apidoc\annotation as Apidoc;
 
 
-/**
- * lang(api.mdDesc.controller.title)
- * @Apidoc\Group("base")
- * @Apidoc\Sort(6)
- */
-class MdDesc extends BaseController
+#[Apidoc\Title("Markdown编写接口描述")]
+#[Apidoc\Group("base")]
+#[Apidoc\Sort(6)]
+class MdDesc
 {
 
 
-    /**
-     * lang(api.mdDesc.mdDesc.title)
-     * @Apidoc\Method("GET")
-     * @Apidoc\Md(" ## 说明
-
+    #[
+        Apidoc\Title("使用md语法写接口说明"),
+        Apidoc\Method("POST"),
+        Apidoc\Md("
+        ## 说明
+        
     这里可以使用Markdown语法
 
     ### 字段说明
     ```javascript
     var a = 1;
-    ```");
-     * @Apidoc\Method("GET")
-     * @Apidoc\Param("username", type="string",require=true, desc="lang(api.field.username)")
-     */
+    ```
+        "),
+        Apidoc\Param(name:"name",type: "string",require: true,desc: "姓名",mock: "@string"),
+        Apidoc\Returned(name:"name",type: "string",desc: "姓名"),
+    ]
     public function mdDesc(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
 
 
-    /**
-     * lang(api.mdDesc.mdRefDesc.title)
-     * @Apidoc\Desc("lang(api.mdDesc.mdRefDesc.desc)")
-     * @Apidoc\Method("GET")
-     * @Apidoc\Md (ref="/docs/apiDesc.md#引用Md文档说明")
-     * @Apidoc\Param("username", type="string",require=true, desc="lang(api.field.username)")
-     */
+
+    #[
+        Apidoc\Title("引用md文档写接口说明"),
+        Apidoc\Method("POST"),
+        Apidoc\Md(ref: "/docs/apiDesc.md#引用Md文档说明"),
+        Apidoc\Param(name:"name",type: "string",require: true,desc: "姓名",mock: "@string"),
+        Apidoc\Returned(name:"name",type: "string",desc: "姓名"),
+    ]
     public function mdRefDesc(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
 
 
     /**
-     * lang(api.mdDesc.mdDoc.title)
-     * @Apidoc\Desc("lang(api.mdDesc.mdDoc.desc)")
-     * @Apidoc\Method("GET")
-     * @Apidoc\Md (ref="/docs/mdApi.md")
      * NotResponses
      * NotParams
      * NotHeaders
      * NotQuerys
      */
+    #[Apidoc\Title("自定义文档内容")]
+    #[Apidoc\Md(ref: "/docs/mdApi.md")]
     public function mdDoc(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
 
 
 
-    /**
-     * lang(api.mdDesc.mdApiFieldDesc.title)
-     * @Apidoc\Method("GET")
-     * @Apidoc\Param("username", type="string",require=true, desc="lang(api.field.username)" ,md="
-### username字段说明
+
+    #[
+        Apidoc\Title("字段描述使用md语法"),
+        Apidoc\Method("POST"),
+        Apidoc\Param(name:"name",type: "string",require: true,desc: "姓名",md: "
+        ### username字段说明
 ```javascript
   var a = 1;
 ```
-    ")
-    * @Apidoc\Returned ("username1", type="string",require=true, desc="lang(api.field.username)" ,md="
-    ### username字段说明
-    ```javascript
-    var a = 2;
-    ```
-    ")
-     */
+        "),
+        Apidoc\Returned(name:"name",type: "string",desc: "姓名",md: "/docs/apiDesc.md#name字段"),
+    ]
     public function mdApiFieldDesc(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
 
 
-    /**
-     * lang(api.mdDesc.refMdApiFieldDesc.title)
-     * @Apidoc\Method("GET")
-     * @Apidoc\Param("mdField", type="string",require=true, mdRef="/docs/apiDesc.md#name字段" )
-     * @Apidoc\Param(ref="app\model\User@getDetail")
-     * @Apidoc\Returned ("name1", type="string",require=true, mdRef="/docs/apiDesc.md#name字段" )
-     */
-    public function refMdApiFieldDesc(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
+
+    #[
+        Apidoc\Title("使用md定义成功响应体"),
+        Apidoc\Method("POST"),
+        Apidoc\Param(name:"name",type: "string",require: true,desc: "姓名"),
+        Apidoc\ResponseSuccessMd(ref: "/docs/mdResponse.md"),
+    ]
+    public function mdResponseSuccess(Request $request){
+        $params = $request->all();
+        return json(['code' => 0, 'data'=> $params]);
     }
-
-
 
 
 

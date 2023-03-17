@@ -2,148 +2,90 @@
 
 namespace app\demo\controller;
 
-use app\admin\services\ApiDoc as ApiDocService;
-use app\admin\services\AuthFunction;
-use app\BaseController;
-use app\Request;
+use support\Request;
 use hg\apidoc\annotation as Apidoc;
-use hg\apidoc\generator\ParseTemplate;
-use think\facade\Cookie;
+use app\model\User as UserModel;
 
 
-/**
- * lang(api.params.controller.title)
- * @Apidoc\Group("base")
- * @Apidoc\Sort(2)
- */
-class Params extends BaseController
+#[Apidoc\Title("接口参数的注解")]
+#[Apidoc\Group("base")]
+#[Apidoc\Sort(2)]
+class Params
 {
 
-
-    /**
-     * @Apidoc\Title("lang(api.params.index.title)")
-     * @Apidoc\Query ("username", type="abc",require=true, desc="lang(api.field.username)")
-     * @Apidoc\Query("password", type="string",require=true, desc="lang(api.field.password)")
-     * @Apidoc\Query("phone", type="string",require=true, desc="lang(api.field.phone)")
-     * @Apidoc\Query("sex", type="int",default=2,desc="lang(api.field.sex)" )
-     * @Apidoc\Returned("id", type="int", desc="id")
-     */
-    public function index(){
-        $res = $this->request->param();
-        return show(0,"",$res);
+    #[Apidoc\Title("基础参数")]
+    #[Apidoc\Url("/demo/params/index/{userid}")]
+    #[Apidoc\Method("POST")]
+    #[Apidoc\RouteParam(name:"userid",type: "int",require: true,desc: "路由参数，会员id",mock: "@integer(10, 100)")]
+    #[Apidoc\Query(name:"name",type: "string",require: true,desc: "Url的Query参数，姓名",mock: "@cname")]
+    #[Apidoc\Query(name:"age",type: "int",require: true,desc: "Url的Query参数，年龄",mock: "@integer(10, 100)")]
+    #[Apidoc\Param(name:"username",type: "string",require: true,desc: "请求体中的Body参数，用户名",mock: "@string")]
+    #[Apidoc\Param(name:"password",type: "string",require: true,desc: "请求体中的Body参数，密码",mock: "@string")]
+    #[Apidoc\Returned(name:"id",type: "int",desc: "响应体中的参数，id")]
+    #[Apidoc\Returned(name:"name",type: "string",desc: "响应体中的参数，name")]
+    public function index(Request $request,$userid){
+        $res = $request->all();
+        return json(['code' => 0, 'userid' => $userid,'all'=> $res]);
     }
 
 
-    /**
-     * @Apidoc\Title("lang(api.params.getParams.title)")
-     * @Apidoc\Query("info",type="object",desc="lang(api.field.object)",
-     *         @Apidoc\Query ("name", type="string",desc="lang(api.field.name)",mock="@name"),
-     *         @Apidoc\Query ("sex", type="string",desc="lang(api.field.sex)",default="1"),
-     *         @Apidoc\Query ("data", type="object",desc="lang(api.field.data)",
-     *              @Apidoc\Query ("id", type="int",desc="Id",mock="@integer(10, 1000)"),
-     *              @Apidoc\Query ("type", type="string",desc="lang(api.field.dataType)",mock="@integer(10, 100)"),
-     *         ),
-     * )
-     * @Apidoc\Query ("reg", type="array",require=true, desc="lang(api.field.array)",
-     *         @Apidoc\Query ("id", type="int",desc="Id",mock="@integer(10, 100)"),
-     *         @Apidoc\Query ("type", type="string",desc="lang(api.field.dataType)",mock="@integer(10, 100)"),
-     * )
-     * @Apidoc\Query ("username", type="abc",require=true, desc="lang(api.field.username)",mock="@cname")
-     * @Apidoc\Query("phone", type="string",require=true, desc="lang(api.field.phone)")
-     * @Apidoc\Returned("id", type="int", desc="id")
-     */
-    public function getParams(){
-        $res = $this->request->param();
-        return show(0,"",$res);
-    }
 
-    /**
-     * @Apidoc\Title("lang(api.params.formdata.title)")
-     * @Apidoc\Desc("lang(api.params.formdata.desc)")
-     * @Apidoc\Author("HG")
-     * @Apidoc\Method("POST")
-     * @Apidoc\ParamType("formdata")
-     * @Apidoc\Param("name",type="string", require=true,default="1",desc="lang(api.field.username)",mock="@name")
-     * @Apidoc\Param("phone",type="string", require=true,desc="lang(api.field.phone)",mock="@phone")
-     * @Apidoc\Returned("res", type="boolean",desc="保存状态")
-     */
+    #[
+        Apidoc\Title("formData传参"),
+        Apidoc\Method("POST"),
+        Apidoc\ParamType("formdata"),
+        Apidoc\Param(name:"name",type: "string",require: true,desc: "姓名",mock: "@string"),
+        Apidoc\Param(name:"phone",type: "string",require: true,desc: "电话",mock: "@phone"),
+        Apidoc\Returned(name:"name",type: "string",desc: "姓名"),
+        Apidoc\Returned(name:"phone",type: "string",desc: "电话"),
+    ]
     public function formdata(Request $request){
-        $params = $request->param();
-        return show(0,"",$params);
-    }
-
-    /**
-     * lang(api.params.depth.title)
-     * @Apidoc\Desc("lang(api.params.depth.desc)")
-     * @Apidoc\Method("post")
-     * @Apidoc\Param("info",type="object",desc="lang(api.field.info)",
-     *     @Apidoc\Param ("name",type="string",desc="lang(api.field.name)"),
-     *     @Apidoc\Param ("sex",type="string",desc="lang(api.field.sex)"),
-     *     @Apidoc\Param ("group",type="object",desc="lang(api.field.group)",
-     *          @Apidoc\Param ("groupName",type="string",desc="lang(api.field.groupName)"),
-     *          @Apidoc\Param ("groupId",type="int",desc="Id"),
-     *     )
-     * )
-     * @Apidoc\Returned("userList",type="array",desc="lang(api.field.userList)",
-     *     @Apidoc\Returned ("userInfo",type="object",ref="app\model\User",desc="lang(api.params.depth.refDesc)",
-     *          @Apidoc\Returned ("group",type="object",desc="lang(api.field.group)",
-     *               @Apidoc\Returned ("groupName",type="string",desc="lang(api.field.groupName)"),
-     *               @Apidoc\Returned ("groupId",type="int",desc="Id"),
-     *          )
-     *     )
-     *
-     * )
-     */
-    public function depth(){
-        $res = $this->request->param();
-        return show(0,"",$res);
+        $res = $request->all();
+        return json(['code' => 0, 'data'=> $res]);
     }
 
 
-    /**
-     * lang(api.params.complex.title)
-     * @Apidoc\Method("post")
-     * @Apidoc\Param("array_string",type="array",childrenType="boolean",desc="lang(api.field.array)")
-     * @Apidoc\Param("array_object",type="array",childrenType="object",desc="lang(api.field.objectArray)",
-     *     @Apidoc\Param("name",type="string",desc="lang(api.field.name)"),
-     *     @Apidoc\Param("code",type="string",desc="lang(api.field.code)"),
-     * )
-     * * @Apidoc\Param("array_object_object",type="array",childrenType="object",desc="lang(api.field.depthObject)",
-     *      @Apidoc\Param("name",type="string",desc="lang(api.field.name)"),
-     *      @Apidoc\Param("arrObj",type="object",desc="lang(api.field.depthChildren)",
-     *          @Apidoc\Param("name",type="string",desc="lang(api.field.name)"),
-     *          @Apidoc\Param("code",type="string",desc="lang(api.field.code)"),
-     *     ),
-     * )
-     * @Apidoc\Param("array_array_object",type="array",childrenType="array",desc="lang(api.field.depthArray)",
-     *     @Apidoc\Param("arrObj",type="object",desc="lang(api.field.depthChildren)",
-     *          @Apidoc\Param("name",type="string",desc="lang(api.field.name)"),
-     *          @Apidoc\Param("code",type="string",desc="lang(api.field.code)"),
-     *     ),
-     * )
-     */
-    public function complex(){
-        $res = $this->request->param();
-        return show(0,"",$res);
-    }
-
-
-    /**
-     * @Apidoc\Title ("lang(api.params.tree.title)")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param("treeData",type="tree", desc="lang(api.field.tree)",childrenField="children",childrenDesc="lang(api.field.treeChildren)",
-     *     @Apidoc\Param("name",type="string",desc="lang(api.field.name)"),
-     *     @Apidoc\Param("code",type="int",desc="lang(api.field.code)"),
-     * )
-     * @Apidoc\Returned("userData", type="tree", ref="app\model\User",desc="lang(api.field.refTree)",childrenField="children")
-     */
-    public function tree(){
-        $res = $this->request->param();
-        return show(0,"",$res);
+    #[
+        Apidoc\Title("深层级数据结构"),
+        Apidoc\Method("POST"),
+        Apidoc\Param(name:"userInfo",type: "object",require: true,desc: "会员信息",children: [
+            ['name'=>'name','type'=>'string','desc'=>'姓名'],
+            ['name'=>'sex','type'=>'string','desc'=>'性别'],
+            ['name'=>'group','type'=>'object','desc'=>'所属分组','children'=>[
+                ['name'=>'groupId','type'=>'int','desc'=>'分组id','md'=>'## 点对点'],
+                ['name'=>'groupName','type'=>'string','desc'=>'分组名'],
+            ]],
+        ]),
+        Apidoc\Returned(name:"userList",type: "array",require: true,desc: "会员信息列表",children: [
+            ['name'=>'userInfo','type'=>'object','ref'=>UserModel::class,'desc'=>'会员信息','children'=>[
+                ['name'=>'openid','type'=>'string','desc'=>'ref引入追加字段，Openid'],
+                ['name'=>'email','type'=>'string','desc'=>'ref引入追加字段，邮箱'],
+                ['name'=>'group','type'=>'object','desc'=>'ref引入追加字段，所属分组','children'=>[
+                    ['name'=>'groupId','type'=>'int','desc'=>'分组id'],
+                    ['name'=>'groupName','type'=>'string','desc'=>'分组名'],
+                ]],
+            ]],
+        ]),
+    ]
+    public function depth(Request $request){
+        $res = $request->all();
+        return json(['code' => 0, 'data'=> $res]);
     }
 
 
 
-
+    #[
+        Apidoc\Title("Tree树形数据结构"),
+        Apidoc\Method("POST"),
+        Apidoc\Param(name:"treeData",type: "tree",require: true,desc: "会员信息",children: [
+            ['name'=>'name','type'=>'string','desc'=>'姓名'],
+            ['name'=>'sex','type'=>'string','desc'=>'性别'],
+        ]),
+        Apidoc\Returned(name:"userData",type: "tree",ref: "app\model\User",desc: "refTree",childrenField: "childs"),
+    ]
+    public function tree(Request $request){
+        $res = $request->all();
+        return json(['code' => 0, 'data'=> $res]);
+    }
 
 }
