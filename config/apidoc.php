@@ -117,7 +117,7 @@ return [
     // 文档标题，显示在左上角与首页
     'title'              => 'lang(apidoc.app.title)',
     // 文档描述，显示在首页
-    'desc'               => '',
+    'desc'               => '本演示站源码：https://github.com/HGthecode/apidoc-demos',
     // （必须）设置文档的应用/版本
     'apps'           => [
         [
