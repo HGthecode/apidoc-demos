@@ -21,8 +21,10 @@ class Mock extends BaseController
      * @Apidoc\Param("number",type="int",mock="@integer(10, 100)")
      * @Apidoc\Param("boolean",type="boolean",mock="@boolean")
      * @Apidoc\Param("date",type="date",mock="@date")
+     * @Apidoc\Param("now",type="date",mock="@now('year')")
+     * @Apidoc\Param("moment",type="datetime",mock="@moment('add',1,'year')")
      * @Apidoc\Param("time",type="time",mock="@time('H:m')")
-     * @Apidoc\Param("time",type="datetime",mock="@datetime('yyyy-MM-dd HH:mm:ss')")
+     * @Apidoc\Param("datetime",type="datetime",mock="@datetime('yyyy-MM-dd HH:mm:ss')")
      * @Apidoc\Param("string",type="string",mock="@string")
      * @Apidoc\Param("name",type="string",mock="@cname")
      * @Apidoc\Param("text",type="string",mock="@cparagraph")
@@ -32,6 +34,7 @@ class Mock extends BaseController
      * @Apidoc\Param("idcard",type="string",mock="@idcard")
      * @Apidoc\Param("regexp",type="string",mock="@regexp('/\[a-z]{5,10}\-/',3)")
      * @Apidoc\Param("abc",type="string",mock="@abc('666')")
+     * @Apidoc\Param("url",type="string",mock="@url('https')")
      * @Apidoc\Param("array",type="array",desc="lang(api.field.array)",children={
      *     @Apidoc\Param("name",type="string",desc="lang(api.field.name)",mock="@cname"),
      *     @Apidoc\Param("age",type="int",desc="lang(api.field.name)",mock="@integer(0, 100)"),

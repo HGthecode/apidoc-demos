@@ -117,7 +117,7 @@ return [
     // 文档标题，显示在左上角与首页
     'title'              => 'lang(apidoc.app.title)',
     // 文档描述，显示在首页
-    'desc'               => '本演示站源码：https://github.com/HGthecode/apidoc-demos',
+    'desc'               => '',
     // （必须）设置文档的应用/版本
     'apps'           => [
         [
@@ -166,7 +166,18 @@ return [
         'letter_rule' => "lcfirst",
         // url前缀
         'prefix'=>"",
-
+        // 过滤的目录
+//        'filter_keys'=>['app','controller','demo'],
+        // 自定义url生成方法
+        'custom' =>function($path,$method,$url){
+            $urlArr    = explode("/", $url);
+            $classPathArr = [];
+            for ($i = 2; $i < count($urlArr)-1; $i++) {
+                $classPathArr[]=$urlArr[$i];
+            }
+            $classPath = implode('.', $classPathArr);
+            return "/".$urlArr[1]."/".$classPath."/".$method;
+        },
     ],
     // （必须）缓存配置
     'cache'              => [
@@ -184,8 +195,6 @@ return [
         // 授权访问后的有效期
         'expire' => 24*60*60
     ],
-    // （选配）是否自动注册路由
-    'auto_register_routes'=>true,
     // 全局参数
     'params'=>[
         'header'=>[
@@ -244,7 +253,7 @@ return [
     'generator' => [
         [
             'title' => 'lang(apidoc.generator.crud.title)',
-            'enable' => false,
+            'enable' => true,
             'middleware' => [
                 \app\common\middleware\CreateCrudMiddleware::class
             ],
@@ -279,11 +288,11 @@ return [
                     'path' => 'app\${app[0].key}\validate',
                     'template' => 'template\crud\validate.tpl',
                 ],
-//                [
-//                    'name' => 'route',
-//                    'path' => 'app\${app[0].key}\route\${app[0].key}.php',
-//                    'template' => 'template\crud\route.tpl',
-//                ],
+                [
+                    'name' => 'route',
+                    'path' => 'app\${app[0].key}\route\${app[0].key}.php',
+                    'template' => 'template\crud\route.tpl',
+                ],
             ],
             'table' => [
                 'field_types' => $tableFieldTypes,
@@ -357,11 +366,11 @@ return [
                     'path' => 'app\${app[0].folder}\validate',
                     'template' => 'template\relation\validate.tpl',
                 ],
-//                [
-//                    'name' => 'route',
-//                    'path' => 'app\${app[0].folder}\route\${app[0].folder}.php',
-//                    'template' => 'template\relation\route.tpl',
-//                ],
+                [
+                    'name' => 'route',
+                    'path' => 'app\${app[0].folder}\route\${app[0].folder}.php',
+                    'template' => 'template\relation\route.tpl',
+                ],
             ],
             'table' => [
                 'field_types' => $tableFieldTypes,
@@ -496,26 +505,7 @@ return [
             'tips'=>'请依次选择 分页查询、明细查询、新增、编辑、删除接口',
             'template'=>'template\codes\vue_crud.tpl',
         ]
-    ],
-    // （选配）接口分享功能
-    'share'=>[
-        // 是否开启接口分享功能
-        'enable'=>true,
-        // 自定义接口分享操作，二维数组，每个配置为一个按钮操作
-        'actions'=>[
-            [
-                // 操作名称
-                'name'=>'下载json',
-                // 点击时触发的方法
-                'click'=>function($shareData,$apiData){
-                    $path = $shareData['name'].".json";
-                    $jsonFile = fopen(public_path().$path, "w") or die("Unable to open file!");
-                    $txt = json_encode($apiData);
-                    fwrite($jsonFile, $txt);
-                    fclose($jsonFile);
-                    return 'downloadFile("http://tp6.apidoc-demos.com/'.$path.'","'.$shareData['name'].'");';
-                }
-            ]
-        ]
     ]
+
+
 ];
